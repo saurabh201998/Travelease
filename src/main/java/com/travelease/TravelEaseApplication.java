@@ -1,5 +1,4 @@
-﻿package com.travelease;
-
+package com.travelease;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
