@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Buses | TravelEase</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center text-primary">Find Your Bus</h2>
+    <div class="card p-4 shadow-lg">
+        <form action="/search" method="get">
+            <div class="mb-3">
+                <label for="sourceCity" class="form-label">Source City</label>
+                <select id="sourceCity" name="sourceCity" class="form-select">
+                    <option value="">Select Source City</option>
+                    <!-- Dynamically populate cities -->
+                    <th:block th:each="city : ${cities}">
+                        <option th:value="${city.id}" th:text="${city.name}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="destinationCity" class="form-label">Destination City</label>
+                <select id="destinationCity" name="destinationCity" class="form-select">
+                    <option value="">Select Destination City</option>
+                    <th:block th:each="city : ${cities}">
+                        <option th:value="${city.id}" th:text="${city.name}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="travelDate" class="form-label">Travel Date</label>
+                <input type="date" id="travelDate" name="travelDate" class="form-control">
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-lg">Search Buses</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="mt-3 text-center text-danger" th:if="${message}">
+        <strong th:text="${message}"></strong>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
