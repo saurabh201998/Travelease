@@ -6,21 +6,64 @@
     <title>Search Buses | TravelEase</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
+        /* Full-screen background */
         body {
-            background: url('/static/images/bus.jpg') no-repeat center center fixed;
+            background: url('/images/bus.jpg') no-repeat center center fixed;
             background-size: cover;
         }
-        .container {
-            background: rgba(255, 255, 255, 0.8); /* Light overlay for readability */
+
+        /* Header styling */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            color: red;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: blue;
+            font-size: 24px;
+        }
+
+        /* Search box styling */
+        .search-container {
+            background: rgba(255, 255, 255, 0.85); /* Transparent effect */
             border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* Button styling */
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
 
-<div class="container mt-5">
+<!-- Header Section -->
+<div class="header">
+    <h1 class="title">TravelEase</h1>
+    <h2 class="subtitle">Expand your world</h2>
+</div>
+
+<!-- Search Box -->
+<div class="search-container">
     <h2 class="text-center text-primary">Find Your Bus</h2>
     <div class="card p-4 shadow-lg">
         <form action="/search" method="get">
@@ -50,7 +93,7 @@
             </div>
 
             <div class="text-center">
-                <button type="submit" class="btn btn-primary btn-lg">Search Buses</button>
+                <button type="submit" class="btn btn-custom btn-lg">Search Buses</button>
             </div>
         </form>
     </div>
