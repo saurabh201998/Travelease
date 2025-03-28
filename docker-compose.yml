@@ -1,0 +1,43 @@
+﻿version: '3.8'
+
+services:
+  travelease-db:
+    image: mysql:8
+    container_name: travelease-db
+    environment:
+      MYSQL_DATABASE: travelease
+      MYSQL_ROOT_PASSWORD: Root@123  # Matches your application.properties
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - travelease-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -pRoot@123"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  travelease-app:
+    build: .
+    container_name: travelease-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://travelease-db:3306/travelease?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Root@123
+      JWT_SECRET: your_jwt_secret_here  # Replace with your secret
+    depends_on:
+      travelease-db:
+        condition: service_healthy
+    networks:
+      - travelease-network
+
+volumes:
+  mysql_data:
+
+networks:
+  travelease-network:
+    driver: bridge
