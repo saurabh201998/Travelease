@@ -6,37 +6,72 @@
     <title>Search Buses | TravelEase</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        /* Full-screen background */
+        /* Full-page background that scrolls */
         body {
-            background: url('/images/bus.jpg') no-repeat center center fixed;
+            background: url('/images/bus.jpg') no-repeat center center;
             background-size: cover;
+            height: 200vh; /* More height to enable scrolling */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Header styling */
+        /* Header styling - Fixed to the top */
         .header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
-            margin-bottom: 20px;
+            color: white;
+            z-index: 10; /* Keeps header above other content */
         }
 
+        /* Title styling */
         .title {
-            color: red;
-            font-size: 36px;
+            font-size: 60px; /* Increased font size */
             font-weight: bold;
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.7); /* Drop shadow for better visibility */
+            margin-bottom: 10px;
         }
 
+        /* Subtitle styling */
         .subtitle {
-            color: blue;
-            font-size: 24px;
+            font-size: 30px; /* Slightly increased subtitle size */
+            font-weight: 500;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Drop shadow for better readability */
         }
 
-        /* Search box styling */
+        /* Fixed search section */
         .search-container {
-            background: rgba(255, 255, 255, 0.85); /* Transparent effect */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(10px);
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            margin: auto;
+        }
+
+        /* Input fields */
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: black;
+        }
+
+        .form-control::placeholder {
+            color: black;
+            opacity: 0.8;
         }
 
         /* Button styling */
@@ -47,6 +82,7 @@
             font-weight: bold;
             padding: 10px 20px;
             border-radius: 5px;
+            border: none;
         }
 
         .btn-custom:hover {
@@ -56,13 +92,13 @@
 </head>
 <body>
 
-<!-- Header Section -->
+<!-- Header Section (Fixed) -->
 <div class="header">
     <h1 class="title">TravelEase</h1>
     <h2 class="subtitle">Expand your world</h2>
 </div>
 
-<!-- Search Box -->
+<!-- Search Box (Fixed) -->
 <div class="search-container">
     <h2 class="text-center text-primary">Find Your Bus</h2>
     <div class="card p-4 shadow-lg">
