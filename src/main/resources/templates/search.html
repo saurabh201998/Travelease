@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Buses | TravelEase</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: url('/static/images/bus.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.8); /* Light overlay for readability */
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 <body>
 
@@ -16,7 +28,6 @@
                 <label for="sourceCity" class="form-label">Source City</label>
                 <select id="sourceCity" name="sourceCity" class="form-select">
                     <option value="">Select Source City</option>
-                    <!-- Dynamically populate cities -->
                     <th:block th:each="city : ${cities}">
                         <option th:value="${city.id}" th:text="${city.name}"></option>
                     </th:block>
