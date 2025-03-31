@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,6 +29,11 @@
             background-color: #28a745;
             color: white;
             font-weight: bold;
+        }
+        .btn-book.disabled {
+            background-color: gray !important;
+            cursor: not-allowed;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -63,7 +68,11 @@
                         <td th:text="${schedule.fare}"></td>
                         <td th:text="${schedule.availableSeats}"></td>
                         <td>
-                            <a href="#" class="btn btn-book btn-sm">Book Now</a>
+                            <a th:href="@{/bookings/new/{id}(id=${schedule.id})}" 
+                               th:classappend="${schedule.availableSeats == 0} ? 'disabled'" 
+                               class="btn btn-book btn-sm">
+                                Book Now
+                            </a>
                         </td>
                     </tr>
                 </tbody>

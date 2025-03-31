@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Confirm Your Booking</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Booking Confirmation</h2>
+        
+        <div class="journey-details">
+            <h3>Journey Details</h3>
+            <p><strong>Bus:</strong> <span th:text="${schedule.bus.busNumber}">BUS123</span></p>
+            <p><strong>Route:</strong> 
+                <span th:text="${schedule.route.departureCity}">City A</span> → 
+                <span th:text="${schedule.route.arrivalCity}">City B</span>
+            </p>
+            <p><strong>Departure:</strong> 
+                <span th:text="${#temporals.format(schedule.departureTime, 'dd MMM yyyy HH:mm')}">01 Jan 2023 10:00</span>
+            </p>
+        </div>
+        
+        <div class="fare-summary">
+            <h3>Fare Summary</h3>
+            <p>Base Fare (×<span th:text="${selectedSeats}">2</span> seats): 
+               ₹<span th:text="${schedule.fare}">500</span> × <span th:text="${selectedSeats}">2</span> = 
+               ₹<span th:text="${schedule.fare * selectedSeats}">1000</span></p>
+            
+            <p><strong>Total Amount:</strong> ₹<span th:text="${totalFare}">1000</span></p>
+        </div>
+        
+        <form th:action="@{/bookings/finalize}" method="post">
+            <input type="hidden" name="scheduleId" th:value="${schedule.id}">
+            <input type="hidden" name="seats" th:value="${selectedSeats}">
+            <input type="hidden" name="totalFare" th:value="${totalFare}">
+            
+            <button type="submit" class="btn-confirm">Confirm & Pay</button>
+        </form>
+    </div>
+</body>
+</html>

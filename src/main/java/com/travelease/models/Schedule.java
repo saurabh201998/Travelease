@@ -11,12 +11,12 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // Changed to EAGER
     @JoinColumn(name = "route_id")
     @NotNull(message = "Route is required")
     private Route route;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // Changed to EAGER
     @JoinColumn(name = "bus_id")
     @NotNull(message = "Bus is required")
     private Bus bus;

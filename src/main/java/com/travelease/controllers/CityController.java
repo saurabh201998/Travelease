@@ -3,53 +3,40 @@ package com.travelease.controllers;
 import com.travelease.models.City;
 import com.travelease.services.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 
-@Controller
-@RequestMapping("/admin/cities")
+@RestController // Change @Controller to @RestController
+@RequestMapping("/api/cities") // Change the mapping to match Postman request
 public class CityController {
 
     @Autowired
     private CityService cityService;
 
     @GetMapping
-    public String listCities(Model model) {
-        model.addAttribute("cities", cityService.getAllCities());
-        return "admin/cities/list";
+    public List<City> getAllCities() {
+        return cityService.getAllCities();
     }
 
-    @GetMapping("/new")
-    public String showCreateForm(Model model) {
-        model.addAttribute("city", new City());
-        return "admin/cities/form";
+    @GetMapping("/{id}")
+    public City getCityById(@PathVariable Long id) {
+        return cityService.getCityById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid city ID: " + id));
     }
 
     @PostMapping
-    public String saveCity(@Valid @ModelAttribute("city") City city, 
-                           BindingResult result) {
-        if (result.hasErrors()) {
-            return "admin/cities/form";
-        }
-        cityService.saveCity(city);
-        return "redirect:/admin/cities";
+    public City saveCity(@RequestBody City city) { // Use @RequestBody for JSON input
+        return cityService.saveCity(city);
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        City city = cityService.getCityById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid city ID: " + id));
-        model.addAttribute("city", city);
-        return "admin/cities/form";
-    }
-
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteCity(@PathVariable Long id) {
-        cityService.deleteCity(id);
-        return "redirect:/admin/cities";
+        boolean deleted = cityService.deleteCity(id);
+        if (deleted) {
+            return "City deleted successfully";
+        } else {
+            return "City not found";
+        }
     }
 }
