@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment Error</title>
+</head>
+<body>
+    <h1>Payment Failed</h1>
+    <p th:text="${error}">Error message</p>
+    <a th:href="@{/bookings/{id}(id=${booking.id})}">Try Again</a>
+</body>
+</html>
