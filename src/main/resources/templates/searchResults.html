@@ -4,88 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bus Search Results - TravelEase</title>
-
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         body {
             background: url('/static/images/bus.jpg') no-repeat center center fixed;
             background-size: cover;
+            min-height: 100vh;
         }
         .container {
-            max-width: 900px;
-            margin-top: 50px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.85); /* Light overlay for readability */
+            max-width: 1000px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.92);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
         .table thead {
-            background-color: #007bff;
+            background-color: #0d6efd;
             color: white;
         }
         .btn-book {
-            background-color: #28a745;
+            background-color: #198754;
             color: white;
             font-weight: bold;
+            transition: all 0.3s;
         }
-        .btn-book.disabled {
-            background-color: gray !important;
+        .btn-book:hover {
+            background-color: #157347;
+            transform: translateY(-1px);
+        }
+        .btn-book:disabled {
+            background-color: #6c757d;
             cursor: not-allowed;
-            pointer-events: none;
+        }
+        .journey-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .no-buses {
+            padding: 30px;
+            text-align: center;
+        }
+        .bus-type {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .time-cell {
+            font-weight: 500;
+        }
+        .fare-cell {
+            font-weight: 600;
+            color: #0d6efd;
         }
     </style>
 </head>
 <body>
+    <div th:replace="fragments/navbar :: navbar"></div>
 
     <div class="container">
+        <div class="journey-info" th:if="${not schedules.empty}">
+            <h4 class="mb-3">
+                <span th:text="${sourceCity.name} + 
+                    ${sourceCity.state != null ? ', ' + sourceCity.state : ''}"></span> 
+                <i class="bi bi-arrow-right"></i> 
+                <span th:text="${destinationCity.name} + 
+                    ${destinationCity.state != null ? ', ' + destinationCity.state : ''}"></span>
+            </h4>
+            <h5 th:text="'Travel Date: ' + ${#temporals.format(travelDate, 'EEEE, MMMM d, yyyy')}"></h5>
+            <p class="text-muted mb-0" th:text="'Showing ' + ${schedules.size()} + ' available buses'"></p>
+        </div>
+
         <h2 class="text-center mb-4">Available Buses</h2>
 
-        <!-- If no results found -->
-        <div th:if="${schedules.empty}" class="alert alert-warning text-center" role="alert">
-            No buses available for the selected route and date.
+        <div th:if="${schedules.empty}" class="alert alert-warning no-buses" role="alert">
+            <h4 class="alert-heading">No buses available!</h4>
+            <p>We couldn't find any buses for your selected route and date.</p>
+            <hr>
+            <a href="/" class="btn btn-primary">Try a different search</a>
         </div>
 
-        <!-- Display results -->
         <div th:if="${not schedules.empty}">
-            <table class="table table-striped text-center">
-                <thead>
-                    <tr>
-                        <th>Bus Name</th>
-                        <th>Departure Time</th>
-                        <th>Arrival Time</th>
-                        <th>Fare (₹)</th>
-                        <th>Seats Available</th>
-                        <th>Book</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="schedule : ${schedules}">
-                        <td th:text="${schedule.bus.name}"></td>
-                        <td th:text="${schedule.departureTime}"></td>
-                        <td th:text="${schedule.arrivalTime}"></td>
-                        <td th:text="${schedule.fare}"></td>
-                        <td th:text="${schedule.availableSeats}"></td>
-                        <td>
-                            <a th:href="@{/bookings/new/{id}(id=${schedule.id})}" 
-                               th:classappend="${schedule.availableSeats == 0} ? 'disabled'" 
-                               class="btn btn-book btn-sm">
-                                Book Now
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Bus Details</th>
+                            <th>Timings</th>
+                            <th>Fare</th>
+                            <th>Availability</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="schedule : ${schedules}">
+                            <td>
+                                <div class="fw-bold" th:text="${schedule.bus.name}"></div>
+                                <div class="bus-type" th:text="${schedule.bus.type} + ' • ' + ${schedule.bus.regNumber}"></div>
+                                <small class="text-muted" th:text="${schedule.bus.capacity} + ' seats total'"></small>
+                            </td>
+                            <td class="time-cell">
+                                <div th:text="${#temporals.format(schedule.departureTime, 'hh:mm a')}"></div>
+                                <div th:if="${schedule.arrivalTime != null}" 
+                                     th:text="'Arrives: ' + ${#temporals.format(schedule.arrivalTime, 'hh:mm a')}"></div>
+                                <div th:if="${schedule.route.distanceInKm != null}" 
+                                     th:text="${schedule.route.distanceInKm} + ' km'"></div>
+                            </td>
+                            <td class="fare-cell" th:text="'₹' + ${#numbers.formatDecimal(schedule.fare, 1, 2)}"></td>
+                            <td>
+                                <span th:if="${schedule.availableSeats > 5}" class="badge bg-success">Available</span>
+                                <span th:if="${schedule.availableSeats > 0 and schedule.availableSeats <= 5}" 
+                                      class="badge bg-warning text-dark">Few left</span>
+                                <span th:if="${schedule.availableSeats == 0}" 
+                                      class="badge bg-danger">Full</span>
+                                <div th:text="${schedule.availableSeats} + ' seats'"></div>
+                            </td>
+                            <td>
+                                <a th:href="@{/bookings/new(scheduleId=${schedule.id})}" 
+                                   th:classappend="${schedule.availableSeats == 0} ? 'disabled'" 
+                                   class="btn btn-book btn-sm"
+                                   th:disabled="${schedule.availableSeats == 0}">
+                                    Book Now
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <div class="text-center mt-3">
-            <a href="/" class="btn btn-secondary">Back to Search</a>
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Search
+                </a>
+                <small class="text-muted" th:text="'Last updated: ' + ${#temporals.format(#temporals.createNow(), 'hh:mm a')}"></small>
+            </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

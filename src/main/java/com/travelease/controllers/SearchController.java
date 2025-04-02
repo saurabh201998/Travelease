@@ -1,5 +1,6 @@
 package com.travelease.controllers;
 
+import com.travelease.models.City;
 import com.travelease.services.CityService;
 import com.travelease.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Controller
 public class SearchController {
@@ -32,15 +34,30 @@ public class SearchController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate travelDate,
             Model model) {
 
-        // If any parameter is missing, return search page without filtering results
+        // Return to search page if any parameter is missing
         if (sourceCity == null || destinationCity == null || travelDate == null) {
+            model.addAttribute("cities", cityService.getAllCities());
             model.addAttribute("message", "Please enter all details to search for buses.");
-            return "search"; // This should match search.html inside templates
+            return "search";
         }
 
-        // Fetch schedules if all parameters are present
+        // Get city objects
+        Optional<City> sourceCityObj = cityService.getCityById(sourceCity);
+        Optional<City> destCityObj = cityService.getCityById(destinationCity);
+
+        if (!sourceCityObj.isPresent() || !destCityObj.isPresent()) {
+            model.addAttribute("cities", cityService.getAllCities());
+            model.addAttribute("message", "Invalid city selection.");
+            return "search";
+        }
+
+        // Add all required attributes to the model
         model.addAttribute("schedules",
                 scheduleService.findSchedulesByRouteAndDate(sourceCity, destinationCity, travelDate));
-        return "searchResults"; // This should match searchResults.html inside templates
+        model.addAttribute("sourceCity", sourceCityObj.get());
+        model.addAttribute("destinationCity", destCityObj.get());
+        model.addAttribute("travelDate", travelDate);
+
+        return "searchResults";
     }
 }

@@ -26,6 +26,10 @@ public class CityService {
     }
     
     public City saveCity(City city) {
+        // Ensure state is not null before saving
+        if (city.getState() == null) {
+            city.setState("Unknown");
+        }
         return cityRepository.save(city);
     }
     
@@ -35,5 +39,10 @@ public class CityService {
             return true;
         }
         return false;
+    }
+    
+    // Additional method to verify city existence
+    public boolean cityExists(Long id) {
+        return cityRepository.existsById(id);
     }
 }
