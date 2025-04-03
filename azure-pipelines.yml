@@ -1,0 +1,99 @@
+# azure-pipelines.yml
+trigger:
+- main
+
+variables:
+  azureSubscription: '<your-azure-subscription>'
+  webAppName: 'travelease-spring-app'
+  resourceGroup: '<your-resource-group>'
+  environmentName: 'Production'
+  MYSQL_HOST: '<your-mysql-host>'
+  MYSQL_DATABASE: 'travelease'
+  SPRING_PROFILES_ACTIVE: 'prod'
+
+stages:
+- stage: Build
+  displayName: Build and Test
+  jobs:
+  - job: Build_Backend
+    displayName: Build Backend
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: JavaToolInstaller@0
+      inputs:
+        versionSpec: '17'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+      displayName: 'Install Java JDK 17'
+
+    - script: |
+        ./mvnw clean package -DskipTests=true
+      displayName: 'Maven Build'
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: 'target'
+        Contents: '*.jar'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      displayName: 'Copy JAR file'
+
+    - publish: '$(Build.ArtifactStagingDirectory)'
+      artifact: backend
+'
+
+- stage: Deploy
+  displayName: Deploy Application
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy_Spring_App
+    displayName: Deploy Spring Boot App
+    environment: $(environmentName)
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: backend
+          - task: AzureWebApp@2
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: 'webAppLinux'
+              appName: '$(webAppName)'
+              runtimeStack: 'JAVA|17-java17'
+              package: '$(Pipeline.Workspace)/backend/*.jar'
+              appSettings: |
+                [
+                  {
+                    "name": "SPRING_DATASOURCE_URL",
+                    "value": "jdbc:mysql://$(MYSQL_HOST):3306/$(MYSQL_DATABASE)?useSSL=true&requireSSL=false",
+                    "slotSetting": false
+                  },
+                  {
+                    "name": "SPRING_DATASOURCE_USERNAME",
+                    "value": "$(MYSQL_USERNAME)", # Set in Azure variables
+                    "slotSetting": false
+                  },
+                  {
+                    "name": "SPRING_DATASOURCE_PASSWORD",
+                    "value": "$(MYSQL_PASSWORD)", # Set in Azure variables
+                    "slotSetting": false
+                  },
+                  {
+                    "name": "RAZORPAY_KEY_ID",
+                    "value": "$(RAZORPAY_KEY_ID)", # Set in Azure variables
+                    "slotSetting": false
+                  },
+                  {
+                    "name": "RAZORPAY_KEY_SECRET",
+                    "value": "$(RAZORPAY_KEY_SECRET)", # Set in Azure variables
+                    "slotSetting": false
+                  },
+                  {
+                    "name": "SPRING_PROFILES_ACTIVE",
+                    "value": "$(SPRING_PROFILES_ACTIVE)",
+                    "slotSetting": false
+                  }
+                ]
